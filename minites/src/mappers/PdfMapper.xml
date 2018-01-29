@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 회의록 관련 맵퍼 -->
+<mapper namespace="PdfMapper">
+
+<!-- 미팅정보 가져오기 -->
+<select id="getpdf" parameterType="string" resultType="meeting">
+	select * from minites_meeting
+	where meeting_no = #{meeting_no}
+</select>
+
+<!-- 아젠다 가져오기 -->
+<select id="getAgenda" parameterType="string" resultType="agenda">
+	select * from minites_agenda
+	where meeting_no = #{meeting_no}
+
+</select>
+
+<!-- 스테이트먼트 가져오기 -->
+<select id="getStmt" resultType="statements" parameterType="string">
+	select * from minites_statesment
+	where agenda_no = #{agenda_no}
+
+</select>
+
+<!-- 투두가져오기 -->
+<select id="getTodo" resultType="todo" parameterType="string">
+	select * from minites_todo
+	where stmt_no = #{stmt_no}
+</select>
+
+<!-- 커멘츠가져오기 -->
+<select id="getComments" resultType="comments" parameterType="string">
+	select * from minites_comment
+	where stmt_no = #{stmt_no}
+</select>
+
+
+
+
+</mapper>
+

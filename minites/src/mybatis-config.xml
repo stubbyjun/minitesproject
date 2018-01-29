@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+
+	<!-- DB접속정보 값을 가지고 있는 파일 -->
+	<properties resource="db.properties" />
+	
+	<typeAliases>
+		<typeAlias type="minites.vo.Agenda" alias="agenda"/>			<!-- 안건 -->
+		<typeAlias type="minites.vo.Comments" alias="comments"/>		<!-- 커멘트 -->
+		<typeAlias type="minites.vo.Invite" alias="invite"/>			<!-- 초대 -->
+		<typeAlias type="minites.vo.Join" alias="join"/>				<!-- 참가 -->
+		<typeAlias type="minites.vo.Meeting" alias="meeting"/>			<!-- 회의록 -->
+		<typeAlias type="minites.vo.Participants" alias="participants"/><!-- 참가자 -->
+		<typeAlias type="minites.vo.Statements" alias="statements"/>	<!-- 발언   -->
+		<typeAlias type="minites.vo.Todo" alias="todo"/>				<!-- 할 일 -->
+		<typeAlias type="minites.vo.Updates" alias="updates"/>			<!-- 수정 -->
+		<typeAlias type="minites.vo.Users" alias="users"/>				<!-- 사용자 -->
+		
+		<typeAlias type="minites.vo.Stat" alias="stat"/>				<!-- 통계 -->
+		
+	</typeAliases>
+	
+	<!-- DB접속 정보 셋팅 -->
+	<environments default="development">
+		<environment id="development">
+			<transactionManager type="JDBC" />
+			<dataSource type="POOLED">
+				<property name="driver" value="${driver}" />
+				<property name="url" value="${url}" />
+				<property name="username" value="${username}" />
+				<property name="password" value="${password}" />
+			</dataSource>
+		</environment>
+	</environments>
+	
+	<!-- SQL문 정의한 파일 포함 -->
+	<mappers>
+		<mapper resource="mappers/MeetingMapper.xml" />
+		<mapper resource="mappers/StatMapper.xml" /> 
+		<mapper resource="mappers/PdfMapper.xml"/>
+	</mappers>
+	
+</configuration>

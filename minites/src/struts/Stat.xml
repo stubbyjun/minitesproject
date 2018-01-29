@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+        "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+        "http://struts.apache.org/dtds/struts-2.0.dtd">
+
+<struts>
+    <package name="Stat" namespace="/" extends="minites"> <!-- json사용 -->
+    
+    <action name="Statpage" >
+    	<result type="redirect">/pages/Stat.jsp</result>
+    </action>	
+	
+	<!-- 통계 정보 가져오기 -->
+	<action name="thisMonthList" class="minites.action.StatAction" method="thisMonthList">
+		<result type="json"></result>
+	</action>
+	
+	<!-- 지난 주 -->
+	<action name="lastweek" class="minites.action.StatAction" method="lastweek">
+		<result type="json"></result>
+	</action>
+	
+	<!-- 다음 주 -->
+	<action name="nextweek" class="minites.action.StatAction" method="nextweek">
+		<result type="json"></result>
+	</action>
+	
+	<!-- 지난 달 -->
+	<action name="lastmonth" class="minites.action.StatAction" method="lastmonth">
+		<result type="json"></result>
+	</action>
+	
+	<!-- 다음 달 -->	
+	<action name="nextmonth" class="minites.action.StatAction" method="nextmonth">
+		<result type="json"></result>
+	</action>
+	
+	</package>
+</struts>

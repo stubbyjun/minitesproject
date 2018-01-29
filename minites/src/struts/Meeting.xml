@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE struts PUBLIC
+        "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+        "http://struts.apache.org/dtds/struts-2.0.dtd">
+
+<struts>
+
+    <package name="Meeting" namespace="/Meeting" extends="minites">
+    
+    <!-- 메인화면 (미팅목록) 으로 가기 -->
+    <action name = "Meetinglist" class = "minites.action.MeetingAction" method = "meetinglist">
+    	<result>/pages/Mainpage.jsp</result>
+    </action>
+    
+   	<!-- 캘린더 목록으로 -->
+   	<action name = "Calendarlist" class = "minites.action.MeetingAction" method = "calendarlist">
+   		<result>/pages/Maincalendar.jsp</result>
+   	</action>
+	
+	<!-- 할 일 목록   -->
+	<action name="Todolist" class="minites.action.MeetingAction" method="todolist">
+		<result>/pages/Todolist.jsp</result>
+	</action>
+	
+	<!-- 할 일 담당자 정보 가져오기 -->
+	<action name="Todo_userinfo" class="minites.action.MeetingAction" method="todo_userinfo">
+		<result type="json"></result>
+	</action>
+	
+	<!-- 할 일 삭제 -->
+	<action name="deletetodo" class="minites.action.MeetingAction" method="deletetodo">
+		<result type="redirect">
+			<param name="location">../Meeting/Todolist.action</param>
+		</result>
+
+	</action>
+	
+	<!-- 검색폼으로 -->
+	<action name = "Search" class="minites.action.MeetingAction" method = "search">
+		<result>/pages/Search.jsp</result>
+	</action>
+
+	<!-- 검색어, 검색조건 비어있을 때 검색결과 -->
+	<action name="searchAllresult" class = "minites.action.MeetingAction" method = "searchAllresult">
+		<result>/pages/Search.jsp</result>
+	</action>
+	
+	<!-- 검색결과 -->
+	<action name="searchresult" class = "minites.action.MeetingAction" method = "searchresult">
+		<result>/pages/Search.jsp</result>
+	</action>
+
+
+	<!-- 로그인 폼으로-->
+	<action name = "Join" class = "minites.action.MeetingAction" method = "join">
+		<result name = "join">/pages/Join.jsp</result> <!-- 새로가입 -->
+		<result name = "login" type="redirect">../Meeting/Meetinglist.action</result> <!-- 이미가입 -->
+	</action>
+	
+
+	<!-- 일정 추가 폼으로 -->
+	<action name="goschedule">
+		<result>/pages/Insertschedule.jsp</result>
+	</action>
+
+	<!--db에 회의 일정 추가 -->
+	<action name="insertschedule" class = "minites.action.MeetingAction" method = "insertschedule">
+		<result type="redirect">../Meeting/Calendarlist.action</result>
+	</action>
+	
+	<!-- 일정추가 + 회의록폼 이동 -->
+	<action name="writeminites" class = "minites.action.MeetingAction" method = "writeminites">
+		<result>/pages/Minitesform.jsp</result>
+	</action>
+	
+	<!-- 제목정렬 -->
+	<action name = "Titlesort" class = "minites.action.MeetingAction" method = "titlesort">
+		<result>/pages/Mainpage.jsp</result>
+	</action>
+
+
+	
+	<!-- 미팅 저장 -->
+	<action name="saveMeeting" class="minites.action.MeetingAction" method = "saveMeeting">
+		<result type="redirect">../Meeting/Meetinglist.action</result>
+	</action>
+	
+	
+	<!-- 미팅번호 가져오기 -->
+	<action name = "GetMeeting_no" class="minites.action.PdfAction" method = "FindMeeting_no">
+		<result>/pages/Mainpage.jsp</result>
+	</action>
+	
+	<!-- pdf 폼1-->
+	<action name = "topdf1" class = "minites.action.PdfAction" method = "pdfout">
+		<result>/pages/Download.jsp</result>
+	</action>
+	
+	<!-- pdf 폼2-->
+	<action name = "topdf2" class = "minites.action.PdfAction" method = "pdfout">
+		<result>/pages/Download.jsp</result>
+	</action>
+	
+	<action name = "Invite" class = "minites.action.MeetingAction" method = "inviteMember">
+		<result>/pages/Invite.jsp</result>
+	</action>
+	
+	<action name="fileDownLoad" class="minites.common.FileDownLoadAction">
+      		<result type="stream">
+      			<param name="contentType">${contentType}</param>
+      			<param name="inputName">inputStream</param>
+      			<param name="contentDisposition">
+      				${contentDisposition}
+      			</param>
+      			<param name="bufferSize">1024</param>
+      			<param name="contentLength">${contentLength}</param>
+      		</result>
+      	</action>
+	
+	<!-- 참석자 자동완성 검색 -->
+	<action name="Addperson" class="minites.action.AddPersonAction" method="addPerson">
+		<result type="json"></result>
+	</action>
+    
+    <!-- 미팅 폼으로 들어가기 -->
+    <action name="review" class="minites.action.MeetingAction" method="review">
+    	<result>/pages/Minitesform.jsp</result>
+    	<result name="fail" type="redirect">../Meeting/dulagagi.action</result>
+    </action>
+    <!-- 미팅 번호가 M(임의번호)인 것 수정해서 들어감-->
+    <action name="dulagagi" class="minites.action.MeetingAction" method="dulagagi">
+    	<result>/pages/Minitesform.jsp</result>
+    </action>
+
+    <!-- 참석자 검색후 추가 ; 자동완성 -->
+    <action name="insertperson" class="minites.action.AddPersonAction" method="insertperson">
+    	   	<result type="chain"> 
+        		<param name="namespace">/Meeting</param>
+        		<param name="actionName">joinList</param>
+        		<param name="meeting_no">${meeting_no}</param>
+           	</result>
+    </action>
+    
+    <!--추가된 참석자 리스트 가져오기 -->
+    <action name="joinList" class="minites.action.AddPersonAction" method="joinList">
+    	<result type="json"></result>
+    </action>
+	
+	<action name="createPartici"  class="minites.action.AddPersonAction" method="createPartici">
+			<result type="chain"> 
+        		<param name="namespace">/Meeting</param>
+        		<param name="actionName">joinList</param>
+        		<param name="meeting_no">${meeting_no}</param>
+           	</result>
+	</action>
+	
+       
+    <!-- db 저장된 임시 아이디를 진짜 아이디로 체인지 -->   
+       
+    <action name="replaceid" class="minites.action.MeetingAction" method="replaceid">
+    	<result type="redirect">
+			<param name="location">../Meeting/Todolist.action</param>
+		</result>
+    </action> 
+    </package>
+</struts>

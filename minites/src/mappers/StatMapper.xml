@@ -1,0 +1,481 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 회의록 관련 맵퍼 -->
+<mapper namespace="StatMapper">
+
+<!-- 이번 달 -> 총 통계 --> 
+<select id="month_total_list" resultType="stat" parameterType="string">
+select 
+      substr(sysdate,1,2) year_month,
+      substr(sysdate,4,2) month_month,
+      count(distinct m.goal) total_title_month
+      ,count(distinct m.meeting_no) total_count_month
+      ,trunc(sum((to_number(substr(m.meeting_end,12,2))*60+to_number(substr(m.meeting_end,15,2)))
+			-(to_number(substr(m.meeting_start,12,2))*60+to_number(substr(m.meeting_start,15,2))))/60,1) total_time_month 
+from minites_meeting m
+where m.user_id=#{value}
+and substr(inputdate,4,2)=substr(sysdate,4,2)
+group by substr(sysdate,4,2)
+ </select>
+ 
+ <!-- 이번 달 -> 몇 명 만났나 -->
+<select id="howmanymonth" resultType="string" parameterType="string">
+select count(distinct i.participants_id) total_person_month
+from minites_meeting m, minites_invite i 
+where m.user_id=#{value}
+and m.user_id=i.user_id
+and substr(m.inputdate,4,2)=substr(sysdate,4,2)
+</select>
+
+
+
+<!-- 이번 달 -> 그래프 -->
+<!-- 1월 -->
+<select id="month_graph_list_1" resultType="stat" parameterType="string">
+	select 
+			'1월' graph_month,
+			nvl(count(meeting_no),0) graph_count_month,
+			nvl(trunc(sum((to_number(substr(meeting_end,12,2))*60+to_number(substr(meeting_end,15,2)))
+			-(to_number(substr(meeting_start,12,2))*60+to_number(substr(meeting_start,15,2))))/60,1),0) graph_time_month 
+	from
+		 	 minites_meeting
+	where    		
+			user_id=#{value}
+	and 			
+			substr(meeting_start,6,2)=1			
+</select>
+<!-- 2월 -->
+<select id="month_graph_list_2" resultType="stat" parameterType="string">
+	select 
+			'2월' graph_month,
+			nvl(count(meeting_no),0) graph_count_month,
+			nvl(trunc(sum((to_number(substr(meeting_end,12,2))*60+to_number(substr(meeting_end,15,2)))
+			-(to_number(substr(meeting_start,12,2))*60+to_number(substr(meeting_start,15,2))))/60,1),0) graph_time_month 
+	from
+		 	 minites_meeting
+	where    		
+			user_id=#{value}
+	and 			
+			substr(meeting_start,6,2)=2			
+</select>
+<!-- 3월 -->
+<select id="month_graph_list_3" resultType="stat" parameterType="string">
+	select 
+			'3월' graph_month,
+			nvl(count(meeting_no),0) graph_count_month,
+			nvl(trunc(sum((to_number(substr(meeting_end,12,2))*60+to_number(substr(meeting_end,15,2)))
+			-(to_number(substr(meeting_start,12,2))*60+to_number(substr(meeting_start,15,2))))/60,1),0) graph_time_month 
+	from
+		 	 minites_meeting
+	where    		
+			user_id=#{value}
+	and 			
+			substr(meeting_start,6,2)=3			
+</select>
+<!-- 4월 -->
+<select id="month_graph_list_4" resultType="stat" parameterType="string">
+	select 
+			'4월' graph_month,
+			nvl(count(meeting_no),0) graph_count_month,
+			nvl(trunc(sum((to_number(substr(meeting_end,12,2))*60+to_number(substr(meeting_end,15,2)))
+			-(to_number(substr(meeting_start,12,2))*60+to_number(substr(meeting_start,15,2))))/60,1),0) graph_time_month 
+	from
+		 	 minites_meeting
+	where    		
+			user_id=#{value}
+	and 			
+			substr(meeting_start,6,2)=4			
+</select>
+<!-- 5월 -->
+<select id="month_graph_list_5" resultType="stat" parameterType="string">
+	select 
+			'5월' graph_month,
+			nvl(count(meeting_no),0) graph_count_month,
+			nvl(trunc(sum((to_number(substr(meeting_end,12,2))*60+to_number(substr(meeting_end,15,2)))
+			-(to_number(substr(meeting_start,12,2))*60+to_number(substr(meeting_start,15,2))))/60,1),0) graph_time_month 
+	from
+		 	 minites_meeting
+	where    		
+			user_id=#{value}
+	and 			
+			substr(meeting_start,6,2)=5			
+</select>
+<!-- 6월 -->
+<select id="month_graph_list_6" resultType="stat" parameterType="string">
+	select 
+			'6월' graph_month,
+			nvl(count(meeting_no),0) graph_count_month,
+			nvl(trunc(sum((to_number(substr(meeting_end,12,2))*60+to_number(substr(meeting_end,15,2)))
+			-(to_number(substr(meeting_start,12,2))*60+to_number(substr(meeting_start,15,2))))/60,1),0) graph_time_month 
+	from
+		 	 minites_meeting
+	where    		
+			user_id=#{value}
+	and 			
+			substr(meeting_start,6,2)=6			
+</select>
+<!-- 7월 -->
+<select id="month_graph_list_7" resultType="stat" parameterType="string">
+	select 
+			'7월' graph_month,
+			nvl(count(meeting_no),0) graph_count_month,
+			nvl(trunc(sum((to_number(substr(meeting_end,12,2))*60+to_number(substr(meeting_end,15,2)))
+			-(to_number(substr(meeting_start,12,2))*60+to_number(substr(meeting_start,15,2))))/60,1),0) graph_time_month 
+	from
+		 	 minites_meeting
+	where    		
+			user_id=#{value}
+	and 			
+			substr(meeting_start,6,2)=7			
+</select>
+<!-- 8월 -->
+<select id="month_graph_list_8" resultType="stat" parameterType="string">
+	select 
+			'8월' graph_month,
+			nvl(count(meeting_no),0) graph_count_month,
+			nvl(trunc(sum((to_number(substr(meeting_end,12,2))*60+to_number(substr(meeting_end,15,2)))
+			-(to_number(substr(meeting_start,12,2))*60+to_number(substr(meeting_start,15,2))))/60,1),0) graph_time_month 
+	from
+		 	 minites_meeting
+	where    		
+			user_id=#{value}
+	and 			
+			substr(meeting_start,6,2)=8			
+</select>
+<!-- 9월 -->
+<select id="month_graph_list_9" resultType="stat" parameterType="string">
+	select 
+			'9월' graph_month,
+			nvl(count(meeting_no),0) graph_count_month,
+			nvl(trunc(sum((to_number(substr(meeting_end,12,2))*60+to_number(substr(meeting_end,15,2)))
+			-(to_number(substr(meeting_start,12,2))*60+to_number(substr(meeting_start,15,2))))/60,1),0) graph_time_month 
+	from
+		 	 minites_meeting
+	where    		
+			user_id=#{value}
+	and 			
+			substr(meeting_start,6,2)=9			
+</select>
+<!-- 10월 -->
+<select id="month_graph_list_10" resultType="stat" parameterType="string">
+	select 
+			'10월' graph_month,
+			nvl(count(meeting_no),0) graph_count_month,
+			nvl(trunc(sum((to_number(substr(meeting_end,12,2))*60+to_number(substr(meeting_end,15,2)))
+			-(to_number(substr(meeting_start,12,2))*60+to_number(substr(meeting_start,15,2))))/60,1),0) graph_time_month 
+	from
+		 	 minites_meeting
+	where    		
+			user_id=#{value}
+	and 			
+			substr(meeting_start,6,2)=10		
+</select>
+<!-- 11월 -->
+<select id="month_graph_list_11" resultType="stat" parameterType="string">
+	select 
+			'11월' graph_month,
+			nvl(count(meeting_no),0) graph_count_month,
+			nvl(trunc(sum((to_number(substr(meeting_end,12,2))*60+to_number(substr(meeting_end,15,2)))
+			-(to_number(substr(meeting_start,12,2))*60+to_number(substr(meeting_start,15,2))))/60,1),0) graph_time_month 
+	from
+		 	 minites_meeting
+	where    		
+			user_id=#{value}
+	and 			
+			substr(meeting_start,6,2)=11			
+</select>
+<!-- 12월 -->
+<select id="month_graph_list_12" resultType="stat" parameterType="string">
+	select 
+			'12월' graph_month,
+			nvl(count(meeting_no),0) graph_count_month,
+			nvl(trunc(sum((to_number(substr(meeting_end,12,2))*60+to_number(substr(meeting_end,15,2)))
+			-(to_number(substr(meeting_start,12,2))*60+to_number(substr(meeting_start,15,2))))/60,1),0) graph_time_month 
+	from
+		 	 minites_meeting
+	where    		
+			user_id=#{value}
+	and 			
+			substr(meeting_start,6,2)=12			
+</select>
+
+
+<!--  이번 주 -> 총 통계 -->
+<select id="week_total_list" resultType="stat" parameterType="string">
+
+select 
+    substr(inputdate,4,2) AS "month_week",
+    count(meeting_no) as "total_count_week",
+    count(distinct goal) as "total_title_week",
+    sum((to_number(substr(meeting_end,12,2))*60+to_number(substr(meeting_end,15,2)))
+			-(to_number(substr(meeting_start,12,2))*60+to_number(substr(meeting_start,15,2)))) total_time_week,
+    CEIL((TO_NUMBER(SUBSTRB(TO_CHAR(inputdate,'YYYYMMDD'), -2, 2))+7
+    - TO_NUMBER(TO_CHAR(TO_DATE(TO_CHAR(inputdate,'YYYYMMDD'),'YYYYMMDD'),'D')))/7) AS "week_week"
+from 
+    minites_meeting
+where
+    substr(sysdate,4,2)=substr(inputdate,4,2)
+and 
+    CEIL((TO_NUMBER(SUBSTRB(TO_CHAR(inputdate,'YYYYMMDD'), -2, 2))+7
+    - TO_NUMBER(TO_CHAR(TO_DATE(TO_CHAR(inputdate,'YYYYMMDD'),'YYYYMMDD'),'D')))/7)=
+    CEIL((TO_NUMBER(SUBSTRB(TO_CHAR(sysdate,'YYYYMMDD'), -2, 2))+7
+    - TO_NUMBER(TO_CHAR(TO_DATE(TO_CHAR(sysdate,'YYYYMMDD'),'YYYYMMDD'),'D')))/7)
+and
+	user_id=#{value}    
+group by
+    CEIL((TO_NUMBER(SUBSTRB(TO_CHAR(inputdate,'YYYYMMDD'), -2, 2))+7
+    - TO_NUMBER(TO_CHAR(TO_DATE(TO_CHAR(inputdate,'YYYYMMDD'),'YYYYMMDD'),'D')))/7),substr(inputdate,4,2) 
+	
+</select>
+
+ <!-- 이번 주ㅡ -> 몇 명 만났나 -->
+<select id="howmanyweek" resultType="string" parameterType="string">
+select 
+     count(distinct i.participants_id) total_person_month     
+from 
+   minites_meeting m, MINITES_JOIN i 
+where
+	m.MEETING_NO=i.MEETING_NO
+and 
+    CEIL((TO_NUMBER(SUBSTRB(TO_CHAR(m.inputdate,'YYYYMMDD'), -2, 2))+7
+    - TO_NUMBER(TO_CHAR(TO_DATE(TO_CHAR(m.inputdate,'YYYYMMDD'),'YYYYMMDD'),'D')))/7)=
+    CEIL((TO_NUMBER(SUBSTRB(TO_CHAR(sysdate,'YYYYMMDD'), -2, 2))+7
+    - TO_NUMBER(TO_CHAR(TO_DATE(TO_CHAR(sysdate,'YYYYMMDD'),'YYYYMMDD'),'D')))/7)
+and
+	m.user_id=#{value}
+group by
+    CEIL((TO_NUMBER(SUBSTRB(TO_CHAR(m.inputdate,'YYYYMMDD'), -2, 2))
+    - TO_NUMBER(TO_CHAR(TO_DATE(TO_CHAR(m.inputdate,'YYYYMMDD'),'YYYYMMDD'),'D')))/7)
+</select>
+
+<!-- 이번 주 -> 그래프 일요일 -->
+<select id="week_graph_list_1" resultType="stat" parameterType="string">
+ select
+     '일' "graph_we"
+	  ,nvl(count(*),0) "graph_count_week"
+ 	  ,nvl(sum((to_number(substr(meeting_end,12,2))*60+to_number(substr(meeting_end,15,2)))
+		-(to_number(substr(meeting_start,12,2))*60+to_number(substr(meeting_start,15,2)))),0) "graph_time_week"
+
+from
+    minites_meeting
+where
+	CEIL((TO_NUMBER(SUBSTRB(TO_CHAR(inputdate,'YYYYMMDD'), -2, 2))+7
+    - TO_NUMBER(TO_CHAR(TO_DATE(TO_CHAR(inputdate,'YYYYMMDD'),'YYYYMMDD'),'D')))/7)=
+    CEIL((TO_NUMBER(SUBSTRB(TO_CHAR(sysdate,'YYYYMMDD'), -2, 2))+7
+    - TO_NUMBER(TO_CHAR(TO_DATE(TO_CHAR(sysdate,'YYYYMMDD'),'YYYYMMDD'),'D')))/7)
+and
+	user_id=#{value}
+and
+  to_char(to_date(substr(meeting_start,3,8)),'d')=1
+</select>
+<!-- 이번 주 -> 그래프 월요일 -->
+<select id="week_graph_list_2" resultType="stat" parameterType="string">
+ select
+     '월' "graph_we"
+	  ,nvl(count(*),0) "graph_count_week"
+ 	  ,nvl(sum((to_number(substr(meeting_end,12,2))*60+to_number(substr(meeting_end,15,2)))
+		-(to_number(substr(meeting_start,12,2))*60+to_number(substr(meeting_start,15,2)))),0) "graph_time_week"
+
+from
+    minites_meeting
+where
+	CEIL((TO_NUMBER(SUBSTRB(TO_CHAR(inputdate,'YYYYMMDD'), -2, 2))+7
+    - TO_NUMBER(TO_CHAR(TO_DATE(TO_CHAR(inputdate,'YYYYMMDD'),'YYYYMMDD'),'D')))/7)=
+    CEIL((TO_NUMBER(SUBSTRB(TO_CHAR(sysdate,'YYYYMMDD'), -2, 2))+7
+    - TO_NUMBER(TO_CHAR(TO_DATE(TO_CHAR(sysdate,'YYYYMMDD'),'YYYYMMDD'),'D')))/7)
+and
+	user_id=#{value}
+and
+  to_char(to_date(substr(meeting_start,3,8)),'d')=2
+</select>
+<!-- 이번 주 -> 그래프 화요일 -->
+<select id="week_graph_list_3" resultType="stat" parameterType="string">
+ select
+     '화' "graph_we"
+	  ,nvl(count(*),0) "graph_count_week"
+ 	  ,nvl(sum((to_number(substr(meeting_end,12,2))*60+to_number(substr(meeting_end,15,2)))
+		-(to_number(substr(meeting_start,12,2))*60+to_number(substr(meeting_start,15,2)))),0) "graph_time_week"
+
+from
+    minites_meeting
+where
+	CEIL((TO_NUMBER(SUBSTRB(TO_CHAR(inputdate,'YYYYMMDD'), -2, 2))+7
+    - TO_NUMBER(TO_CHAR(TO_DATE(TO_CHAR(inputdate,'YYYYMMDD'),'YYYYMMDD'),'D')))/7)=
+    CEIL((TO_NUMBER(SUBSTRB(TO_CHAR(sysdate,'YYYYMMDD'), -2, 2))+7
+    - TO_NUMBER(TO_CHAR(TO_DATE(TO_CHAR(sysdate,'YYYYMMDD'),'YYYYMMDD'),'D')))/7)
+and
+	user_id=#{value}
+and
+  to_char(to_date(substr(meeting_start,3,8)),'d')=3
+</select>
+<!-- 이번 주 -> 그래프 수요일 -->
+<select id="week_graph_list_4" resultType="stat" parameterType="string">
+ select
+     '수' "graph_we"
+	  ,nvl(count(*),0) "graph_count_week"
+ 	  ,nvl(sum((to_number(substr(meeting_end,12,2))*60+to_number(substr(meeting_end,15,2)))
+		-(to_number(substr(meeting_start,12,2))*60+to_number(substr(meeting_start,15,2)))),0) "graph_time_week"
+
+from
+    minites_meeting
+where
+	CEIL((TO_NUMBER(SUBSTRB(TO_CHAR(inputdate,'YYYYMMDD'), -2, 2))+7
+    - TO_NUMBER(TO_CHAR(TO_DATE(TO_CHAR(inputdate,'YYYYMMDD'),'YYYYMMDD'),'D')))/7)=
+    CEIL((TO_NUMBER(SUBSTRB(TO_CHAR(sysdate,'YYYYMMDD'), -2, 2))+7
+    - TO_NUMBER(TO_CHAR(TO_DATE(TO_CHAR(sysdate,'YYYYMMDD'),'YYYYMMDD'),'D')))/7)
+and
+	user_id=#{value}
+and
+  to_char(to_date(substr(meeting_start,3,8)),'d')=4
+</select>
+<!-- 이번 주 -> 그래프 목요일 -->
+<select id="week_graph_list_5" resultType="stat" parameterType="string">
+ select
+     '목' "graph_we"
+	  ,nvl(count(*),0) "graph_count_week"
+ 	  ,nvl(sum((to_number(substr(meeting_end,12,2))*60+to_number(substr(meeting_end,15,2)))
+		-(to_number(substr(meeting_start,12,2))*60+to_number(substr(meeting_start,15,2)))),0) "graph_time_week"
+
+from
+    minites_meeting
+where
+	CEIL((TO_NUMBER(SUBSTRB(TO_CHAR(inputdate,'YYYYMMDD'), -2, 2))+7
+    - TO_NUMBER(TO_CHAR(TO_DATE(TO_CHAR(inputdate,'YYYYMMDD'),'YYYYMMDD'),'D')))/7)=
+    CEIL((TO_NUMBER(SUBSTRB(TO_CHAR(sysdate,'YYYYMMDD'), -2, 2))+7
+    - TO_NUMBER(TO_CHAR(TO_DATE(TO_CHAR(sysdate,'YYYYMMDD'),'YYYYMMDD'),'D')))/7)
+and
+	user_id=#{value}
+and
+  to_char(to_date(substr(meeting_start,3,8)),'d')=5
+</select>
+<!-- 이번 주 -> 그래프 금요일 -->
+<select id="week_graph_list_6" resultType="stat" parameterType="string">
+ select
+     '금' "graph_we"
+	  ,nvl(count(*),0) "graph_count_week"
+ 	  ,nvl(sum((to_number(substr(meeting_end,12,2))*60+to_number(substr(meeting_end,15,2)))
+		-(to_number(substr(meeting_start,12,2))*60+to_number(substr(meeting_start,15,2)))),0) "graph_time_week"
+
+from
+    minites_meeting
+where
+	CEIL((TO_NUMBER(SUBSTRB(TO_CHAR(inputdate,'YYYYMMDD'), -2, 2))+7
+    - TO_NUMBER(TO_CHAR(TO_DATE(TO_CHAR(inputdate,'YYYYMMDD'),'YYYYMMDD'),'D')))/7)=
+    CEIL((TO_NUMBER(SUBSTRB(TO_CHAR(sysdate,'YYYYMMDD'), -2, 2))+7
+    - TO_NUMBER(TO_CHAR(TO_DATE(TO_CHAR(sysdate,'YYYYMMDD'),'YYYYMMDD'),'D')))/7)
+and
+	user_id=#{value}
+and
+  to_char(to_date(substr(meeting_start,3,8)),'d')=6
+</select>
+<!-- 이번 주 -> 그래프 토요일 -->
+<select id="week_graph_list_7" resultType="stat" parameterType="string">
+ select
+     '토' "graph_we"
+	  ,nvl(count(*),0) "graph_count_week"
+ 	  ,nvl(sum((to_number(substr(meeting_end,12,2))*60+to_number(substr(meeting_end,15,2)))
+		-(to_number(substr(meeting_start,12,2))*60+to_number(substr(meeting_start,15,2)))),0) "graph_time_week"
+
+from
+    minites_meeting
+where
+	CEIL((TO_NUMBER(SUBSTRB(TO_CHAR(inputdate,'YYYYMMDD'), -2, 2))+7
+    - TO_NUMBER(TO_CHAR(TO_DATE(TO_CHAR(inputdate,'YYYYMMDD'),'YYYYMMDD'),'D')))/7)=
+    CEIL((TO_NUMBER(SUBSTRB(TO_CHAR(sysdate,'YYYYMMDD'), -2, 2))+7
+    - TO_NUMBER(TO_CHAR(TO_DATE(TO_CHAR(sysdate,'YYYYMMDD'),'YYYYMMDD'),'D')))/7)
+and
+	user_id=#{value}
+and
+  to_char(to_date(substr(meeting_start,3,8)),'d')=7
+</select>
+
+
+<!-- 안건 별 그래프 -->
+<select id="agenda" resultType="stat" parameterType="string">
+select
+ 		 substr(inputdate,4,2) month_agenda
+ 		 ,title title_agenda
+ 		 ,count(title) count_agenda,
+ 		 sum((to_number(substr(meeting_end,12,2))*60+to_number(substr(meeting_end,15,2)))
+		-(to_number(substr(meeting_start,12,2))*60+to_number(substr(meeting_start,15,2)))) runtime_agenda
+from
+ 		  minites_meeting 
+where 
+ 		  substr(inputdate,4,2)=substr(sysdate,4,2)
+and
+		user_id=#{value} 		   
+group by 	
+ 		  title
+ 		  ,substr(inputdate,4,2)
+order by 
+		  substr(inputdate,4,2) asc
+<!-- where user id 추가 -->
+</select>
+
+<!-- 지난 달 통계 -->
+<select id="last_month" parameterType="hashmap" resultType="stat">
+select 
+      substr(m.inputdate,1,2) year_month,
+      substr(m.inputdate,4,2) month_month,
+      count(distinct m.goal) total_title_month
+      ,count(distinct m.meeting_no) total_count_month
+      ,trunc(sum((to_number(substr(m.meeting_end,12,2))*60+to_number(substr(m.meeting_end,15,2)))
+			-(to_number(substr(m.meeting_start,12,2))*60+to_number(substr(m.meeting_start,15,2))))/60,1) total_time_month 
+from minites_meeting m
+where 
+	m.user_id=#{user_email} 
+and 
+	substr(m.inputdate,4,2)=#{lastmonth}
+group by substr(m.inputdate,4,2), substr(m.inputdate,1,2)
+</select>
+
+<!-- 지난 달 몇명 -->
+<select id="last_met_people" resultType="string" parameterType="hashmap">
+select count(distinct i.participants_id) total_person_month
+from minites_meeting m, minites_invite i 
+where m.user_id=#{user_email}
+and substr(m.inputdate,4,2)=#{lastmonth}
+and m.user_id=i.user_id
+</select>
+
+<!-- 다음 달 통계 -->
+<select id="next_month" parameterType="hashmap" resultType="stat">
+select 
+      substr(m.inputdate,1,2) year_month,
+      substr(m.inputdate,4,2) month_month,
+      count(distinct m.goal) total_title_month
+      ,count(distinct m.meeting_no) total_count_month
+      ,trunc(sum((to_number(substr(m.meeting_end,12,2))*60+to_number(substr(m.meeting_end,15,2)))
+			-(to_number(substr(m.meeting_start,12,2))*60+to_number(substr(m.meeting_start,15,2))))/60,1) total_time_month 
+from minites_meeting m
+where 
+	m.user_id=#{user_email} 
+and 
+	substr(m.inputdate,4,2)=#{nextmonth}
+group by substr(m.inputdate,4,2), substr(m.inputdate,1,2)
+</select>
+
+<!-- 다음 달 몇명 -->
+<select id="next_met_people" resultType="string" parameterType="hashmap">
+select count(distinct i.participants_id) total_person_month
+from minites_meeting m, minites_invite i 
+where m.user_id=#{user_email}
+and substr(m.inputdate,4,2)=#{nextmonth}
+and m.user_id=i.user_id
+</select>
+
+<!-- 이번 달; 통계 테이블 정보 j.PARTICIPANTS_ID 제외하고-->
+<select id="month_table_list" resultType="stat" parameterType="string">
+select distinct m.title, m.user_id, j.meeting_no, substr(m.INPUTDATE,4,5) inputdate,
+        m.place, substr(m.MEETING_START,12,5) starttime, substr(m.MEETING_END,12,5) endtime
+from minites_meeting m, MINITES_INVITE i, minites_join j
+where m.USER_ID=i.USER_ID 
+and j.MEETING_NO=m.MEETING_NO
+and j.USER_ID=#{value}
+and substr(meeting_start,6,2)=substr(sysdate,4,2)
+order by substr(m.INPUTDATE,4,5)
+</select>
+
+</mapper>
+

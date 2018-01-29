@@ -1,0 +1,845 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 회의록 관련 맵퍼 -->
+<mapper namespace="MeetingMapper">
+
+<!-- 미팅갯수 -->
+<select id="meeting_info" resultType="int" parameterType="String">
+	select 
+		count(meeting_no) as meeting_count 
+	from 
+		minites_meeting
+	where user_id = #{get_user}
+</select>
+
+
+<!-- 참석자 갯수 -->
+<select id="partici_info" resultType="int" parameterType="String">
+	select 
+		count(p.email) as partici_count 
+	from 
+		minites_participants p ,minites_meeting m
+	where 
+		p.meeting_no = m.meeting_no
+	and user_id = #{get_user}	
+
+</select>
+
+<!-- 소요시간 -->
+<select id="runtime_info" resultType="int" parameterType="String">
+	select 
+		runtime 
+	from
+		minites_meeting
+	where user_id = #{get_user}
+</select>
+
+<!-- 남은 할일  -->
+<select id="todo_info" resultType="int" parameterType="String">
+	select
+  		count(t.todo_no) todo_count
+	from 
+ 		minites_todo t, minites_meeting m, minites_statesment s, minites_agenda a
+	where 
+ 	   -(substr(TO_date(t.duedate,'YY/MM/DD'),7,2)-substr(SYSDATE,7,2))&lt;=0
+ 	and
+ 		m.meeting_no=a.meeting_no
+ 	and 
+ 		a.agenda_no=s.agenda_no
+ 	and
+ 		s.stmt_no=t.stmt_no
+ 	and 
+		m.user_id = #{get_user}
+</select>
+
+
+<!-- 할일 관련//////////////////////////////////////////////////////////////////////////////////////////////// -->
+<!-- 할 일 목록 가져오기 -->
+<select id="todolist" parameterType="string" resultType="todo">
+	select 
+      t.todo_no
+      , t.TODO_USER todo_user
+      , t.contents contents
+      , m.title title
+      , a.contents a_contents
+      , substr(TO_date(t.duedate,'YY/MM/DD'),4,2) month
+      , to_date(t.duedate,'YY/MM/DD')-to_date(SYSDATE,'YY/MM/DD') dday
+      , t.duedate duedate
+      , m.meeting_no meeting_no
+    from 
+        minites_todo t, minites_meeting m, minites_statesment s, minites_agenda a
+      where
+        m.meeting_no=a.meeting_no
+      and 
+        a.agenda_no=s.agenda_no
+      and
+        s.stmt_no=t.stmt_no
+      and 
+        m.user_id = #{get_user}
+	and
+		substr(TO_date(t.duedate,'YY/MM/DD'),7,2)-substr(SYSDATE,7,2)>=0
+	order by
+   	 dday asc
+
+</select>
+
+<!-- dday넘은 것들만 가져오기-->
+<select id="todolist2" parameterType="string" resultType="todo">
+	select 
+      t.todo_no
+      , t.TODO_USER todo_user
+      , t.contents contents
+      , m.title title
+      , a.contents a_contents
+      , t.inputdate inputdate
+      , substr(TO_date(t.duedate,'YY/MM/DD'),4,2) month
+      , to_date(SYSDATE,'YY/MM/DD')-to_date(t.duedate,'YY/MM/DD') dday
+      , t.duedate duedate
+      , m.meeting_no meeting_no
+    from 
+        minites_todo t, minites_meeting m, minites_statesment s, minites_agenda a
+      where
+        m.meeting_no=a.meeting_no
+      and 
+        a.agenda_no=s.agenda_no
+      and
+        s.stmt_no=t.stmt_no
+      and 
+        m.user_id = #{get_user}
+	and
+		substr(TO_date(t.duedate,'YY/MM/DD'),7,2)-substr(SYSDATE,7,2)&lt;0
+	order by
+   		 dday asc
+</select>
+
+
+
+
+<!-- 오늘 할 일 갯수 -->
+<select id="todaycount" parameterType="string" resultType="int">
+	select
+  		count(substr(TO_date(t.duedate,'YY/MM/DD'),7,2)-substr(SYSDATE,7,2)) count
+	from 
+ 		minites_todo t, minites_meeting m, minites_statesment s, minites_agenda a
+	where 
+ 	    -(substr(TO_date(t.duedate,'YY/MM/DD'),7,2)-substr(SYSDATE,7,2)) = 0
+ 	and
+ 		m.meeting_no=a.meeting_no
+ 	and 
+ 		a.agenda_no=s.agenda_no
+ 	and
+ 		s.stmt_no=t.stmt_no
+ 	and 
+		m.user_id = #{get_user}
+</select>
+
+<!-- 앞으로 할 일 갯수 -->
+<select id="futurecount"  parameterType="string" resultType="int">
+	select
+  		count(substr(TO_date(t.duedate,'YY/MM/DD'),7,2)-substr(SYSDATE,7,2)) count
+	from 
+ 		minites_todo t, minites_meeting m, minites_statesment s, minites_agenda a
+	where 
+ 	    -(to_date(t.duedate,'YY/MM/DD')-to_date(SYSDATE,'YY/MM/DD')) &lt; 0
+ 	and
+ 		m.meeting_no=a.meeting_no
+ 	and 
+ 		a.agenda_no=s.agenda_no
+ 	and
+ 		s.stmt_no=t.stmt_no
+ 	and 
+		m.user_id = #{get_user}
+</select>
+
+<!-- 지난 일 갯 수 -->
+<select id="pastcount"  parameterType="string" resultType="int">
+	select
+  		count(substr(TO_date(t.duedate,'YY/MM/DD'),7,2)-substr(SYSDATE,7,2)) count
+	from 
+ 		minites_todo t, minites_meeting m, minites_statesment s, minites_agenda a
+	where 
+ 	    -(substr(TO_date(t.duedate,'YY/MM/DD'),7,2)-substr(SYSDATE,7,2))&gt; 0
+ 	and
+ 		m.meeting_no=a.meeting_no
+ 	and 
+ 		a.agenda_no=s.agenda_no
+ 	and
+ 		s.stmt_no=t.stmt_no
+ 	and 
+		m.user_id = #{get_user}
+</select>
+
+<!-- 할 일 담당자 정보 -->
+<select id="todo_userinfo" parameterType="string" resultType="participants">
+	select 
+		t.todo_user todo_user
+		, t.todo_email todo_email
+		, p.phone phone
+		, p.name name
+		, p.photo photo
+	from 
+		minites_participants p
+		, minites_todo t
+	where 
+		t.todo_email
+		= p.email
+	and
+		t.todo_no
+		= #{todo_no}
+</select>
+
+<!-- 할 일 삭제 -->
+<delete id="deletetodo" parameterType="String">
+	delete 
+	from 
+		minites_todo 
+	where 
+		todo_no
+		= #{todo_no}
+</delete>
+
+<!-- 회원가입 -->
+<insert id="join_member" parameterType="Map">
+	insert into minites_user
+		(email,name)
+	values
+		(#{user_email},#{user_name})
+
+</insert>
+
+<!-- 가입되어있는지 안되어있는지? -->
+<select id="search_user" resultType="users" parameterType="string">
+	select 
+		* 
+	from 
+		minites_user
+	where 
+		email 
+		= #{user_email}
+</select>
+
+<!-- 회원 추가정보 -->
+<update id="member_info" parameterType="Map">
+	update 
+		minites_user 
+	set 
+		phone 
+		= #{user_phone} 
+	where 
+		email 
+		= #{user_email}
+</update>
+
+<!-- 회의 일정 추가 -->
+<insert id="insertschedule" parameterType="meeting">
+	insert into minites_meeting
+		(
+			meeting_no
+			,title
+			,user_id
+			,meeting_start
+			,meeting_end
+			,place
+		)
+	values
+		(
+			#{meeting_no}
+			,#{title}
+			,#{user_id}
+			,#{meeting_start}
+			,#{meeting_end}
+			,#{place}
+		)
+</insert>
+
+<!-- 타임라인; 참석한 회의 -->
+<select id="timelinelist" resultType="meeting" parameterType="String">
+	select
+			 distinct j.meeting_no
+			 , m.TITLE
+			 , substr(m.meeting_start,1,10) mstart
+			 , substr(m.meeting_start,12,8) mtime
+			 , m.place
+	from 
+			minites_join j
+			, MINITES_MEETING m
+			, MINITES_USER u
+	where 
+			u.email=#{get_user}
+	and 
+			j.MEETING_NO=m.MEETING_NO
+	and 
+			u.email=j.PARTICIPANTS_ID 
+	order by 
+			substr(m.meeting_start,1,10) desc
+</select>
+
+<!-- 타임라인; 개최한 회의 -->
+<select id="timelinelist_me" resultType="meeting" parameterType="String">
+select
+		meeting_no
+		,title
+		,substr(meeting_start,1,10) mstart 
+		,place
+		,substr(meeting_start,12,8) mtime
+from 
+		minites_meeting
+	where 
+		user_id 
+		= #{get_user}
+	order by 
+		meeting_start desc
+</select>
+
+<!-- 오늘미팅; 참석한 회의 -->
+<select id="todaylist" resultType="meeting" parameterType="String">
+	select
+			 distinct j.meeting_no
+			 , m.TITLE
+			 , substr(m.meeting_start,1,10) mstart
+			 , substr(m.meeting_start,12,8) mtime
+			 , m.place
+	from 
+			minites_join j
+			, MINITES_MEETING m
+			, MINITES_USER u
+	where 
+			u.email=#{get_user}
+	and 
+			j.MEETING_NO=m.MEETING_NO
+	and 
+			u.email=j.PARTICIPANTS_ID
+	and
+			substr(meeting_start,1,10) = to_char(sysdate, 'yyyy-mm-dd')
+	order by 
+			substr(m.meeting_start,1,10) desc
+</select>
+
+<!-- 오늘미팅; 개최한 회의 -->
+<select id="todaylist_me" resultType="meeting" parameterType="String">
+select
+		meeting_no
+		,title
+		,substr(meeting_start,1,10) mstart 
+		,place
+		,substr(meeting_start,12,8) mtime
+from 
+		minites_meeting
+	where 
+		user_id 
+		= #{get_user}
+	and
+		substr(meeting_start,1,10) = to_char(sysdate, 'yyyy-mm-dd')
+	order by 
+		meeting_start desc
+</select>
+
+
+<!-- 제목으로 정렬 -->
+<select id="titlelist" resultType="meeting" parameterType="String">
+	select 
+		title
+		,substr(meeting_start,1,10) mstart 
+		,place
+		,substr(meeting_start,12,8) mtime
+	from 
+		minites_meeting
+	where 
+		user_id = #{get_user}
+	order by 
+		title
+		
+</select>
+
+
+<!-- 검색쪽///////////////////////////////////////////////////////////////////////////////////////////////////// -->
+<!-- 회의 전체 : searchtext가 null일 경우-->
+	<select id="searchall" parameterType="string" resultType="meeting">
+		select 
+		  title title
+		  , substr(meeting_start,1,10) meeting_start
+		  , substr(meeting_end,1,10) meeting_end
+		  , place place
+		from 
+		  minites_meeting
+		where
+			user_id=#{get_user}
+		order by
+			meeting_start desc
+			
+	</select>
+	
+	<!-- 회의 제목 검색 -->
+	<select id="searchtitle" parameterType="hashmap" resultType="meeting">
+		select 
+		  m.title title
+		  , substr(m.meeting_start,1,10) meeting_start
+		  , substr(m.meeting_end,1,10) meeting_end
+		  , m.place place
+		from 
+		  minites_meeting m
+		where
+		  m.title like '%'||#{searchtext}||'%'
+		and
+			user_id = #{get_user}
+		order by
+			m.meeting_start desc
+	</select>	
+	
+	
+	<!-- 장소검색 -->  
+	<select id="searchplace" parameterType="hashmap" resultType="meeting">
+		select 
+		  m.title title
+		  , substr(m.meeting_start,1,10) meeting_start
+		  , substr(m.meeting_end,1,10) meeting_end
+		  , m.place place
+		from 
+		  minites_meeting m
+		where
+		  m.place like '%'||#{searchtext}||'%'
+		and
+			user_id = #{get_user}
+		order by
+			m.meeting_start desc
+	</select>	
+	
+	<!-- 안건 제목 검색 -->	
+	<select id="searcha_title" parameterType="hashmap" resultType="meeting">	
+		select 
+		  distinct(m.title) title
+		  , substr(m.meeting_start,1,10) meeting_start
+		  , substr(m.meeting_end,1,10) meeting_end
+		  , m.place place
+		from 
+		  minites_meeting m
+		  , minites_agenda a
+		where
+		  a.contents like '%'||#{searchtext}||'%'
+		and
+		  m.meeting_no
+		  = a.meeting_no
+		and
+			user_id = #{get_user}
+		order by
+			m.meeting_start desc
+	</select>	  
+	
+	
+	<!-- 발언 내용 검색 -->
+	<select id="searchcontents" parameterType="hashmap" resultType="meeting">
+		select 
+		  m.title title
+		  , substr(m.meeting_start,1,10) meeting_start
+		  , substr(m.meeting_end,1,10) meeting_end
+		  , m.place place
+		from 
+		  minites_meeting m, minites_statesment s, minites_agenda a
+		where
+		  m.meeting_no
+		  = a.meeting_no
+		and
+		  s.agenda_no
+		  = a.AGENDA_NO
+		and
+		  s.CONTENTS like '%'||#{searchtext}||'%'
+		and
+			user_id = #{get_user}
+		order by
+			m.meeting_start desc
+	</select>	  
+	
+
+<select id="getUserinfo" parameterType="string" resultType="users">
+	select * from 
+		minites_user 
+	where 
+		email=#{get_user}
+
+</select>
+
+<update id="changeinfo" parameterType="string">
+	update 
+	  minites_user 
+	set 
+	  name = #{name},
+	  phone = #{phone}
+	where 
+	  email= #{get_user}
+</update>
+
+
+
+<delete id="deleteinfo" parameterType="string">
+	delete from
+		minites_user
+	where
+		email=#{get_user}
+</delete>
+
+
+<!-- 참석자 인서트 -->
+<insert id="insert_partiemail" parameterType="hashmap">
+insert into minites_participants
+	(
+		email,name
+	)
+values
+	(
+		#{email},#{name}
+	)
+</insert>
+
+<!-- 미팅록에 안건 추가 -->
+<insert id="insertAgenda" parameterType="agenda">
+	insert into minites_agenda
+		(
+			agenda_no
+			, contents
+			, meeting_no
+		
+		)
+	values
+		(
+			#{agenda_no}
+			, #{contents}
+			, #{meeting_no}
+		)
+
+</insert>
+
+<!-- 미팅록에 발언 추가 -->
+<insert id="insertStatements" parameterType="statements">
+	insert into MINITES_STATESMENT
+		(
+			stmt_no
+			, contents
+			, agenda_no
+		
+		)
+	values
+		(
+			#{stmt_no}
+			, #{contents}
+			, #{agenda_no}
+		)
+
+</insert>
+
+<!-- meeting_no수정 -->
+<update id="updateMeeting" parameterType="hashmap">
+	update minites_meeting
+		set meeting_no=#{id}
+	where
+		meeting_no=#{mno}
+</update>
+
+<!-- 미팅록에서 목표 수정 -->
+<update id="updateGoal" parameterType="hashmap">
+	update minites_meeting
+		set goal = #{goal}
+	where
+		meeting_no=#{id}
+	
+</update>
+
+<!-- 할 일 db에 넣기 -->
+<insert id="insertTodo" parameterType="todo">
+	insert into minites_todo
+		(
+			todo_no
+			, stmt_no
+			, todo_user
+			, contents
+			, duedate
+			, todo_email
+		
+		)
+	values
+		(
+			#{todo_no}
+			, #{stmt_no}
+			, #{todo_user}
+			, #{contents}
+			, #{duedate}
+			, #{todo_email}
+		)
+	
+
+</insert>
+
+
+
+
+<!-- 커멘트 db에 넣기 -->
+<insert id="insertComment" parameterType="comments">
+	insert into MINITES_comment
+		(
+			comment_no
+			, comment_user
+			, contents
+			, stmt_no
+			, comment_email
+		
+		)
+	values
+		(
+			#{comment_no}
+			, #{comment_user}
+			, #{contents}
+			, #{stmt_no}
+			, #{comment_email}
+		)
+	
+	
+
+</insert>
+
+<!-- 참석자 자동완성 검색 (1.이름검색) -->
+<select id="addPerson" parameterType="hashmap" resultType="invite">
+		select 
+			distinct(i.participants_id), p.name i_name
+		from 
+			minites_invite i, MINITES_PARTICIPANTS p  
+		WHERE
+			i.PARTICIPANTS_ID=p.EMAIL
+		and 
+			p.name like '%'||#{email}||'%'
+		and
+			USER_ID=#{get_user}
+</select>
+
+<!-- 참석자 자동완성 검색 (2.이메일검색) -->
+<select id="addPerson_email" parameterType="hashmap" resultType="invite">
+		select 
+			distinct(i.participants_id), p.name i_name
+		from 
+			minites_invite i, MINITES_PARTICIPANTS p  
+		WHERE
+			i.PARTICIPANTS_ID=p.EMAIL
+		and 
+			p.email like '%'||#{email}||'%'
+		and
+			USER_ID=#{get_user}
+</select>
+
+
+<!-- 미팅 폼으로 들어가기 -->
+<select id="getMeetingReview" parameterType="string" resultType="meeting">
+	select * 
+	from 
+		minites_meeting
+	where
+		meeting_no=#{savedid}
+
+</select>
+
+<!-- 참석자 추가 -->
+<insert id="insertperson" parameterType="hashmap">
+<!-- CREATE SEQUENCE seq_join INCREMENT BY 1 START WITH 1000;
+      CREATE SEQUENCE seq_invite INCREMENT BY 1 START WITH 1000; -->
+ insert into MINITES_JOIN
+ 		(join_no, participants_id, user_id, meeting_no)
+ values
+ 		 (seq_join.nextval, #{email}, #{get_user}, #{meeting_no})
+</insert>
+
+<!-- 회의참석자 가져오기 -->
+<select id="joinList" resultType="join" parameterType="string">
+select
+	 j.participants_id participants_id
+	 , p.name name
+	 , p.phone phone
+	 , j.meeting_no meeting_no
+from
+	 minites_join j, MINITES_PARTICIPANTS p
+where 
+	j.PARTICIPANTS_ID=p.EMAIL
+and
+	j.meeting_no=#{value}
+	
+	
+</select>
+
+<select id="selectAgenda" parameterType="string" resultType="agenda">
+	select * 
+	from 
+		minites_agenda
+	where
+		meeting_no = #{id}
+</select>
+
+<select id="selectStatements" parameterType="string" resultType="statements">
+	select s.stmt_no 
+	from 
+		MINITES_STATESMENT s, MINITES_AGENDA a
+    where 
+    	s.agenda_no = a.agenda_no 
+    and 
+    	a.MEETING_NO = #{id}
+</select>
+	
+
+
+<update id="updateAgenda" parameterType="agenda">
+	update 
+		minites_agenda
+	set
+		contents = #{contents}
+	where
+		agenda_no = #{agenda_no}
+	
+</update>
+
+<update id="updateStatements" parameterType="statements">
+	update
+		MINITES_STATESMENT
+	set
+		contents = #{contents}
+	where
+		stmt_no = #{stmt_no}
+</update>
+
+<update id="updateComment" parameterType="comments">
+	update
+		minites_comment
+	set
+		contents = #{contents}
+	where
+		comment_no = #{comment_no}
+		
+</update>
+
+<update id="updateTodo" parameterType="todo">
+	update
+		minites_todo
+	set 
+		contents = #{contents}
+	where
+		todo_no = #{todo_no}
+</update>
+
+
+<select id="showMinites" parameterType="string" resultType="meeting">
+	select * 
+	from
+		minites_meeting
+	where
+		meeting_no = #{meeting_no}
+	
+</select>
+
+
+
+<insert id="insertParticipants" parameterType="participants">
+	insert into
+		MINITES_PARTICIPANTS
+		(
+			email
+			, meeting_no
+			, name
+		)
+	values
+		(
+			#{email}
+			, #{meeting_no}
+			, #{name}
+		)
+
+
+</insert>
+
+
+
+<insert id="insertJoin" parameterType="join">
+	insert into
+		minites_join
+		(	
+			join_no
+			, participants_id
+			, user_id
+			, meeting_no
+		)
+	values
+		(
+			seq_join.nextval
+			, #{participants_id}
+			, #{user_id}
+			, #{meeting_no}
+		)
+
+</insert>
+
+
+<insert id="insertinvite" parameterType="hashmap">
+	insert into
+		minites_invite
+		(
+			invite_no
+			, user_id
+			, participants_id
+		)
+	
+	values
+		(
+			seq_invite.nextval
+			,#{get_user}
+			, #{email}	
+		)
+	
+</insert>
+
+<select id="getFriendList" parameterType="string" resultType="invite">
+	select * from
+		minites_invite
+	where
+		user_id = #{get_user}
+
+</select>
+
+
+
+
+<delete id="deleteTodos" parameterType="string">
+	delete 
+	from
+		minites_todo
+	where
+		stmt_no = #{stmt_no}
+</delete>
+
+<delete id="deleteComments" parameterType="string">
+	delete 
+	from
+		minites_COMMENT
+	where
+		stmt_no = #{stmt_no}
+
+</delete>
+
+
+<select id="getInvitelist" resultType="invite" parameterType="string">
+	select 
+			distinct(i.participants_id) 
+			, p.name i_name
+		from 
+			minites_invite i, MINITES_PARTICIPANTS p  
+		WHERE
+			i.PARTICIPANTS_ID = p.EMAIL
+		and
+			USER_ID=#{get_user}
+</select>
+
+
+
+<select id="getTodo" parameterType="string" resultType="todo">
+	select * from
+		minites_todo
+	where
+		todo_no 
+			=#{todo_no}
+</select>
+
+</mapper>
+
